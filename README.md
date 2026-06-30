@@ -1,6 +1,6 @@
 # 🧹 CleanList
 
-**CleanList** is a platform designed to manage cleaning schedules for churches, congregations, and other organizations.
+**CleanList** is a platform designed to manage cleaning schedules for organizations.
 
 Its goal is to replace traditional paper schedules with a modern, easy-to-use system where each congregation can manage its own members, groups, and cleaning schedules independently.
 
@@ -256,4 +256,4 @@ This project is licensed under the MIT License.
 - Flutter
 - MySQL
 
-Made with ❤️ to help churches and communities organize their cleaning schedules efficiently.
+Made with ❤️ to help communities organize their cleaning schedules efficiently.
