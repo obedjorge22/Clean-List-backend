@@ -1,13 +1,14 @@
 # ADR 0003: Backend Technology Stack
 
 ## Status
+
 Accepted
 
 ---
 
 ## Context
 
-CleanList is a web-based cleaning schedule management platform designed to organize cleaning lists, members, groups, schedules, and task assignments. The backend must expose a RESTful API capable of handling concurrent requests, stateless authentication, and reliable communication with a relational database while remaining maintainable and scalable.
+CleanList is a web-based cleaning schedule management platform designed to manage cleaning lists, members, groups, schedules, and task assignments. The backend must expose a secure RESTful API, support stateless authentication, provide reliable persistence with a relational database, and remain maintainable, scalable, and easy to evolve.
 
 ---
 
@@ -16,11 +17,29 @@ CleanList is a web-based cleaning schedule management platform designed to organ
 The CleanList backend is implemented using the following technology stack:
 
 - Spring Boot
-- Spring WebFlux
-- Spring Data R2DBC
+- Spring Web (Spring MVC)
+- Spring Data JPA
+- Hibernate ORM
+- JDBC (MySQL Connector/J)
 - MySQL
 - HTTP/JSON communication
 - Maven for dependency management
+
+---
+
+## Rationale
+
+The project follows a traditional synchronous architecture based on Spring MVC and JPA. This approach was selected because it provides:
+
+- Excellent integration with Hibernate and relational databases
+- Mature tooling and documentation
+- Simplified development for CRUD-based applications
+- Robust transaction management
+- Strong ecosystem support
+- Easier onboarding for contributors
+- Long-term maintainability
+
+Since CleanList is primarily a business management application with standard REST operations, a blocking architecture is sufficient to meet the expected workload while reducing implementation complexity.
 
 ---
 
@@ -28,22 +47,24 @@ The CleanList backend is implemented using the following technology stack:
 
 ### Positive
 
-- Reactive, non-blocking architecture
-- High throughput for concurrent requests
-- Excellent scalability
-- Strong Spring ecosystem and community support
-- Native reactive integration with MySQL through R2DBC
-- Easy development and maintenance of RESTful APIs
-- Clear separation of concerns using a layered architecture
+- Mature and stable technology stack
+- Excellent integration with Hibernate and MySQL
+- Simplified persistence using JPA repositories
+- Robust transaction management
+- Extensive documentation and community support
+- Easier debugging and testing
+- Lower learning curve for contributors
+- Well suited for CRUD-oriented business applications
+- Large ecosystem of compatible libraries
 
 ### Negative
 
-- Higher learning curve compared to Spring MVC
-- Reactive programming introduces additional complexity
-- Some third-party libraries have limited reactive support
+- Uses a blocking request model
+- Lower scalability under extremely high concurrency compared to reactive architectures
+- Thread-per-request model consumes more resources under heavy load
 
 ---
 
 ## Decision Summary
 
-Spring Boot with WebFlux, Spring Data R2DBC, and MySQL is the standard backend technology stack for CleanList. This stack provides a modern, scalable, and maintainable foundation that meets the project's current requirements while allowing future growth and evolution.
+CleanList adopts Spring Boot, Spring MVC, Spring Data JPA, Hibernate, JDBC, and MySQL as its backend technology stack. This combination provides a stable, maintainable, and production-ready foundation that aligns with the project's architecture, development goals, and expected workload.
