@@ -1,6 +1,6 @@
-# Reactive CRUD Implementation Guide for CleanList
+# CRUD Implementation Guide for CleanList
 
-This guide defines the standard pattern for implementing reactive CRUD operations in the **CleanList** backend. Every new entity should follow this architecture to keep the codebase consistent, maintainable, and scalable.
+This guide defines the standard pattern for implementing CRUD operations in the **CleanList** backend. Every new entity must follow this architecture to keep the codebase consistent, maintainable, and scalable.
 
 Replace **`[EntityName]`** with the desired entity (e.g. `Member`, `Group`, `CleaningList`, `Schedule`, `Assignment`).
 
@@ -8,16 +8,21 @@ Replace **`[EntityName]`** with the desired entity (e.g. `Member`, `Group`, `Cle
 
 # Project Structure
 
-```
+```text
 src/main/java/com/example/cleanlist
+├── config
 ├── controller
 ├── dto
 │   └── [entity]
-├── model
-├── repository
-├── service
+├── entity
+├── enums
 ├── exception
-└── config
+├── mapper
+├── repository
+├── security
+├── service
+│   ├── impl
+└── util
 ```
 
 ---
@@ -26,13 +31,13 @@ src/main/java/com/example/cleanlist
 
 **Path**
 
-```
+```text
 src/main/java/com/example/cleanlist/controller/[EntityName]Controller.java
 ```
 
 ## Purpose
 
-Expose the REST API endpoints and delegate all business logic to the service layer.
+Expose REST endpoints and delegate all business logic to the service layer.
 
 ## Responsibilities
 
@@ -45,19 +50,29 @@ Expose the REST API endpoints and delegate all business logic to the service lay
 
 - Annotate with `@RestController`
 - Use `@RequestMapping`
-- Use reactive types (`Mono` and `Flux`)
 - Validate requests using `@Valid`
 - Return `ResponseEntity`
+- Keep controllers thin
 
-Typical endpoints:
+Typical endpoints
 
-- GET /api/[entities]
-- GET /api/[entities]/{id}
-- POST /api/[entities]
-- PUT /api/[entities]/{id}
-- DELETE /api/[entities]/{id}
-- PATCH /api/[entities]/{id}/restore
-- DELETE /api/[entities]/{id}/hard
+```text
+GET     /api/[entities]
+
+GET     /api/[entities]/trash
+
+GET     /api/[entities]/{id}
+
+POST    /api/[entities]
+
+PUT     /api/[entities]/{id}
+
+DELETE  /api/[entities]/{id}
+
+PATCH   /api/[entities]/{id}/restore
+
+DELETE  /api/[entities]/{id}/permanent
+```
 
 ---
 
@@ -65,7 +80,7 @@ Typical endpoints:
 
 **Path**
 
-```
+```text
 src/main/java/com/example/cleanlist/service/[EntityName]Service.java
 ```
 
@@ -77,15 +92,17 @@ Contains all business rules.
 
 - Execute CRUD operations
 - Validate business rules
-- Convert DTOs
 - Communicate with repositories
+- Convert entities to DTOs
+- Manage transactions
 
 ## Best Practices
 
-- Annotate with `@Service`
-- Return `Mono` or `Flux`
-- Never expose database entities directly
-- Keep controllers thin
+- Create a service interface
+- Create a service implementation inside `service/impl`
+- Annotate the implementation with `@Service`
+- Use `@Transactional` where appropriate
+- Never expose entities directly
 
 ---
 
@@ -93,7 +110,7 @@ Contains all business rules.
 
 **Path**
 
-```
+```text
 src/main/java/com/example/cleanlist/repository/[EntityName]Repository.java
 ```
 
@@ -106,17 +123,17 @@ Database access layer.
 Extend
 
 ```java
-ReactiveCrudRepository<Entity, Long>
+JpaRepository<Entity, Long>
 ```
 
 Example custom methods
 
 ```java
-Flux<Entity> findAllByDeletedAtIsNull();
+List<Entity> findAllByDeletedAtIsNull();
 
-Flux<Entity> findAllByDeletedAtIsNotNull();
+List<Entity> findAllByDeletedAtIsNotNull();
 
-Mono<Boolean> existsByName(String name);
+boolean existsByName(String name);
 ```
 
 ---
@@ -125,8 +142,8 @@ Mono<Boolean> existsByName(String name);
 
 **Path**
 
-```
-src/main/java/com/example/cleanlist/model/[EntityName].java
+```text
+src/main/java/com/example/cleanlist/entity/[EntityName].java
 ```
 
 ## Purpose
@@ -137,23 +154,26 @@ Represents a database table.
 
 Use
 
-- @Table
-- @Id
-- @Column
+- `@Entity`
+- `@Table`
+- `@Id`
+- `@GeneratedValue`
+- `@Column`
 
-Include
+Use JPA relationships whenever appropriate
+
+- `@ManyToOne`
+- `@OneToMany`
+- `@OneToOne`
+- `@ManyToMany`
+
+Include whenever applicable
 
 - createdAt
 - updatedAt
 - deletedAt
 
-Implement helper methods
-
-```java
-softDelete()
-
-restore()
-```
+Use JPA Auditing or lifecycle callbacks to maintain timestamps.
 
 ---
 
@@ -161,7 +181,7 @@ restore()
 
 **Path**
 
-```
+```text
 src/main/java/com/example/cleanlist/dto/[entity]/
 ```
 
@@ -171,13 +191,13 @@ Define the API contract.
 
 Recommended DTOs
 
-```
+```text
 EntityRequest
 
 EntityResponse
 ```
 
-Use Java Records
+Use Java Records whenever possible.
 
 Example
 
@@ -187,31 +207,75 @@ public record MemberRequest(
     @NotBlank String lastName,
     String phone,
     String email
-){}
+) {}
 ```
 
 Never expose entities directly.
 
 ---
 
-# 6. Database Migration
+# 6. Mapper
 
 **Path**
 
+```text
+src/main/java/com/example/cleanlist/mapper/
 ```
+
+## Purpose
+
+Convert between Entities and DTOs.
+
+## Best Practices
+
+Use MapStruct.
+
+Each entity should have its own mapper.
+
+Example
+
+```text
+MemberMapper
+
+GroupMapper
+
+ScheduleMapper
+```
+
+---
+
+# 7. Database Migration
+
+**Path**
+
+```text
 src/main/resources/db/migration/
 ```
 
 Example
 
-```
+```text
 V1__create_users.sql
 
-V2__create_cleaning_lists.sql
+V2__create_sessions.sql
 
-V3__create_members.sql
+V3__create_cleaning_lists.sql
 
-V4__create_groups.sql
+V4__create_cleaning_list_members.sql
+
+V5__create_members.sql
+
+V6__create_groups.sql
+
+V7__create_group_members.sql
+
+V8__create_schedules.sql
+
+V9__create_no_cleaning_days.sql
+
+V10__create_assignments.sql
+
+V11__create_assignment_history.sql
 ```
 
 Each migration should contain
@@ -220,36 +284,36 @@ Each migration should contain
 - Foreign keys
 - Unique constraints
 - Indexes
-- Soft delete column
+- Soft delete column (when applicable)
 
 ---
 
-# 7. Configuration
+# 8. Configuration
 
 **Path**
 
-```
+```text
 src/main/resources/application.properties
 ```
 
 Contains
 
-- MySQL connection
-- R2DBC configuration
-- JWT configuration
-- Logging
+- MySQL JDBC configuration
+- JPA / Hibernate configuration
 - Flyway
-- Spring properties
+- JWT
+- Spring Security
+- Logging
 
-Never commit real passwords.
+Never commit real passwords or secrets.
 
 ---
 
-# 8. Exception Handling
+# 9. Exception Handling
 
 **Path**
 
-```
+```text
 src/main/java/com/example/cleanlist/exception/
 ```
 
@@ -260,7 +324,7 @@ Contains
 - ValidationException
 - GlobalExceptionHandler
 
-Use Problem Details (RFC 9457) whenever possible.
+Use Spring Problem Details (RFC 9457) whenever possible.
 
 ---
 
@@ -268,117 +332,89 @@ Use Problem Details (RFC 9457) whenever possible.
 
 ## Create
 
+```text
 Controller
-
-↓
-
+    ↓
 Service
-
-↓
-
+    ↓
 Repository
-
-↓
-
+    ↓
 Database
-
-↓
-
+    ↓
 Response DTO
+```
 
 ---
 
 ## Read
 
+```text
 Controller
-
-↓
-
+    ↓
 Service
-
-↓
-
+    ↓
 Repository
-
-↓
-
+    ↓
 Response DTO
+```
 
 ---
 
 ## Update
 
+```text
 Controller
-
-↓
-
+    ↓
 Service
-
-↓
-
+    ↓
 Repository
-
-↓
-
+    ↓
 Database
-
-↓
-
+    ↓
 Response DTO
+```
 
 ---
 
 ## Soft Delete
 
+```text
 Controller
-
-↓
-
+    ↓
 Service
-
-↓
-
+    ↓
 Repository
-
-↓
-
+    ↓
 Update deletedAt
+```
 
 ---
 
 ## Restore
 
+```text
 Controller
-
-↓
-
+    ↓
 Service
-
-↓
-
+    ↓
 Repository
-
-↓
-
+    ↓
 deletedAt = null
+```
 
 ---
 
-## Hard Delete
+## Permanent Delete
 
+```text
 Controller
-
-↓
-
+    ↓
 Service
-
-↓
-
+    ↓
 Repository
-
-↓
-
+    ↓
 Delete record
+```
 
 ---
 
@@ -386,10 +422,10 @@ Delete record
 
 Every entity should provide
 
-```
+```text
 GET     /api/[entities]
 
-GET     /api/[entities]/trashed
+GET     /api/[entities]/trash
 
 GET     /api/[entities]/{id}
 
@@ -401,7 +437,19 @@ DELETE  /api/[entities]/{id}
 
 PATCH   /api/[entities]/{id}/restore
 
-DELETE  /api/[entities]/{id}/hard
+DELETE  /api/[entities]/{id}/permanent
+```
+
+Business-specific endpoints may be added whenever necessary.
+
+Examples
+
+```text
+PATCH /api/assignments/{id}/complete
+
+GET /api/groups/{id}/members
+
+GET /api/schedules/{id}/assignments
 ```
 
 ---
@@ -410,16 +458,14 @@ DELETE  /api/[entities]/{id}/hard
 
 The project currently contains the following entities.
 
-```
+```text
 User
-
-Role
-
-UserRole
 
 Session
 
 CleaningList
+
+CleaningListMember
 
 Member
 
@@ -429,61 +475,14 @@ GroupMember
 
 Schedule
 
+NoCleaningDay
+
 Assignment
 
 AssignmentHistory
 ```
 
-Each entity must follow the same CRUD architecture.
-
----
-
-# General Best Practices
-
-- Keep controllers small.
-- Place all business logic in services.
-- Use DTOs for every request and response.
-- Never expose entities directly.
-- Use `Mono` and `Flux` throughout the application.
-- Never use `.block()` or `.subscribe()` in production code.
-- Implement soft delete whenever applicable.
-- Keep entity-to-DTO conversion centralized.
-- Validate requests using Bean Validation.
-- Use constructor injection.
-- Follow RESTful conventions.
-- Document endpoints using OpenAPI/Swagger.
-
----
-
-# Many-to-Many Relationships
-
-If the join table only contains foreign keys:
-
-Use a many-to-many relationship.
-
-If the join table stores additional information:
-
-Create a dedicated entity.
-
-Example
-
-```
-GroupMember
-```
-
-because it stores
-
-- joinedAt
-- createdAt
-- deletedAt
-
-Therefore, it should have its own
-
-- Entity
-- Repository
-- Service
-- Controller
-- DTOs
+Every entity should follow the same architecture.
 
 ---
 
@@ -493,24 +492,82 @@ CleanList uses JWT authentication.
 
 Authentication endpoints
 
-```
+```text
 POST /api/auth/login
 
 POST /api/auth/refresh
 
 POST /api/auth/logout
+
+GET  /api/auth/google
+
+GET  /api/auth/google/callback
 ```
 
 All protected endpoints require
 
-```
+```text
 Authorization: Bearer <token>
 ```
 
 ---
 
+# General Best Practices
+
+- Keep controllers small.
+- Place all business logic inside services.
+- Use DTOs for every request and response.
+- Never expose JPA entities directly.
+- Use constructor injection.
+- Use Bean Validation.
+- Prefer MapStruct for entity mapping.
+- Use JPA relationships instead of manual joins whenever possible.
+- Implement soft delete where applicable.
+- Follow RESTful conventions.
+- Document endpoints using OpenAPI/Swagger.
+- Write unit and integration tests.
+
+---
+
+# Relationship Guidelines
+
+## Many-to-Many without additional attributes
+
+Use `@ManyToMany`.
+
+Example
+
+```text
+User ↔ Permission
+```
+
+---
+
+## Relationship with additional attributes
+
+Create a dedicated entity.
+
+Examples
+
+```text
+CleaningListMember
+
+GroupMember
+```
+
+These entities contain their own business data and therefore require their own:
+
+- Entity
+- Repository
+- Service
+- Controller
+- DTOs
+- Mapper
+
+---
+
 # Official Standard
 
-This document defines the official implementation standard for every reactive CRUD in the CleanList backend.
+This document defines the official implementation standard for every CRUD operation in the CleanList backend.
 
-Following these conventions ensures consistency, maintainability, scalability, and clean architecture throughout the project.
+Following these conventions ensures consistency, maintainability, scalability, and a clean architecture throughout the project.
