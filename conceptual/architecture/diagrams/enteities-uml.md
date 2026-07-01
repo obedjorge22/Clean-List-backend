@@ -51,7 +51,7 @@ class Session {
 }
 
 %% ===========================
-%% CLEANING LIST
+%% CLEANING LISTS
 %% ===========================
 
 class CleaningList {
@@ -122,6 +122,22 @@ class Schedule {
 }
 
 %% ===========================
+%% NO CLEANING DAYS
+%% ===========================
+
+class NoCleaningDay {
+    +Long id
+    +Long cleaningListId
+    +Date date
+    +String reason
+    +RecurrenceType recurrence
+    +Long createdBy
+    +Date createdAt
+    +Date updatedAt
+    +Date deletedAt
+}
+
+%% ===========================
 %% ASSIGNMENTS
 %% ===========================
 
@@ -150,6 +166,16 @@ class AssignmentHistory {
 }
 
 %% ===========================
+%% ENUMS
+%% ===========================
+
+class RecurrenceType {
+    <<enumeration>>
+    NONE
+    YEARLY
+}
+
+%% ===========================
 %% RELATIONSHIPS
 %% ===========================
 
@@ -169,6 +195,9 @@ GroupMember --> Member : memberId
 
 Schedule --> CleaningList : cleaningListId
 Schedule --> User : createdBy
+
+NoCleaningDay --> CleaningList : cleaningListId
+NoCleaningDay --> User : createdBy
 
 Assignment --> Schedule : scheduleId
 Assignment --> Group : groupId
