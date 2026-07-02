@@ -53,9 +53,7 @@ public class UserServiceImpl implements UserService {
         if (!repository.existsById(id)){
             throw new UserNotFoundException();
         }
-        if (!repository.isActive()){
-            throw new UserNotFoundException();
-        }
+
         Users users = repository.findUsersById(id);
         users.setEmail(requestDTO.email());
         users.setSystemRole(requestDTO.systemRole());

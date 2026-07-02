@@ -15,5 +15,4 @@ public interface UsersRepository extends JpaRepository<Users,Long> {
     List<Users> findAllByDeletedAtIsNotNull();
     Users findUsersById(Long id);
 
-    boolean isActive();
 }
