@@ -4,8 +4,8 @@ import com.example.CleanList.dto.Response;
 import com.example.CleanList.entities.Group;
 import com.example.CleanList.repositories.GroupRepository;
 import com.example.CleanList.Holiday.CalendarificHoliday;
-import com.example.CleanList.entities.Student;
-import com.example.CleanList.repositories.StudentRepository;
+import com.example.CleanList.entities.Users;
+import com.example.CleanList.repositories.UsersRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class CleanDayService {
 
     private final DateService dateService;
     private final GroupRepository groupRepository;
-    private final StudentRepository studentRepository;
+    private final UsersRepository usersRepository;
 
     public Object checkDay(LocalDate date){
 
@@ -30,7 +30,7 @@ public class CleanDayService {
                     .status("feriado".toUpperCase())
                     .groupName(null)
                     .message(holiday.getName())
-                    .students(null)
+                    .users(null)
                     .build();
         }
 
@@ -40,7 +40,7 @@ public class CleanDayService {
                     .status("fim de semana".toUpperCase())
                     .message(dayOfWeek.name())
                     .groupName(null)
-                    .students(null)
+                    .users(null)
                     .build();
         }
 
@@ -55,19 +55,19 @@ public class CleanDayService {
                     .status("sem_grupo")
                     .message("Nenhum grupo definido para hoje")
                     .groupName(null)
-                    .students(null)
+                    .users(null)
                     .build();
         }
 
 
-        List<Student> students = studentRepository.findAllByGroupId(group.getId_group());
+        List<Users> users = usersRepository.findAllByGroupId(group.getId_group());
 
 
         return Response.builder()
                 .status("dia de limpeza")
                 .message( null)
                 .groupName(group.getName())
-                .students(students)
+                .users(users)
                 .build();
     }
 
