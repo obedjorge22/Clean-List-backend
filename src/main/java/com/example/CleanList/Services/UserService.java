@@ -1,9 +1,8 @@
 package com.example.CleanList.Services;
 
-import com.example.CleanList.dto.UpdateUsersRequestDTO;
-import com.example.CleanList.dto.UsersRequestDTO;
-import com.example.CleanList.dto.UsersResponseDTO;
-import com.example.CleanList.entities.Group;
+import com.example.CleanList.dto.users.UpdateUsersRequestDTO;
+import com.example.CleanList.dto.users.UsersRequestDTO;
+import com.example.CleanList.dto.users.UsersResponseDTO;
 
 import java.util.List;
 

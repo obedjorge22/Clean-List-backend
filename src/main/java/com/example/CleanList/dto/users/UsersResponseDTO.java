@@ -1,8 +1,6 @@
-package com.example.CleanList.dto;
+package com.example.CleanList.dto.users;
 
 import com.example.CleanList.entities.enums.SystemRole;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
 import java.time.LocalDateTime;

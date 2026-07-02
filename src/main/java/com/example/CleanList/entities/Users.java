@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Table(name = "users")
 @Entity(name = "users")
 @Data
@@ -20,4 +23,11 @@ public class Users extends BaseEntity {
     private String phone;
     private SystemRole systemRole;
     private boolean active;
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Session> sessions = new ArrayList<>();
 }

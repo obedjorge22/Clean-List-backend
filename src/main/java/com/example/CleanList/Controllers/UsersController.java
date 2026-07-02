@@ -1,17 +1,15 @@
 package com.example.CleanList.Controllers;
 
-import com.example.CleanList.Services.NagerDateService;
 import com.example.CleanList.Services.UserService;
-import com.example.CleanList.dto.UpdateUsersRequestDTO;
-import com.example.CleanList.dto.UsersRequestDTO;
-import com.example.CleanList.dto.UsersResponseDTO;
+import com.example.CleanList.dto.users.UpdateUsersRequestDTO;
+import com.example.CleanList.dto.users.UsersRequestDTO;
+import com.example.CleanList.dto.users.UsersResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController

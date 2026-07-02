@@ -1,9 +1,9 @@
 package com.example.CleanList.Services.userServiceImpl;
 
 import com.example.CleanList.Services.UserService;
-import com.example.CleanList.dto.UpdateUsersRequestDTO;
-import com.example.CleanList.dto.UsersRequestDTO;
-import com.example.CleanList.dto.UsersResponseDTO;
+import com.example.CleanList.dto.users.UpdateUsersRequestDTO;
+import com.example.CleanList.dto.users.UsersRequestDTO;
+import com.example.CleanList.dto.users.UsersResponseDTO;
 import com.example.CleanList.entities.Users;
 import com.example.CleanList.entities.enums.SystemRole;
 import com.example.CleanList.exception.EmailAlreadyExistsException;
