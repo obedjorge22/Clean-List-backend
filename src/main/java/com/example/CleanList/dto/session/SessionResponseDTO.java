@@ -8,13 +8,12 @@ import java.time.LocalDateTime;
 @Builder
 public record SessionResponseDTO(
         Long id,
-        Users user,
-        String ipAddress,
+        Long userId,
         String token,
+        String ipAddress,
         LocalDateTime expiresAt,
         LocalDateTime lastUsed,
         LocalDateTime createdAt,
-        LocalDateTime deletedAt,
-        LocalDateTime updatedAt
-) {
-}
+        LocalDateTime updatedAt,
+        LocalDateTime deletedAt
+) {}

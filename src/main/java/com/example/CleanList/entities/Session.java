@@ -32,4 +32,7 @@ public class Session extends BaseEntity {
 
     @Column(name = "last_used")
     private LocalDateTime lastUsed;
+
+    @Column(nullable = false)
+    private Boolean revoked = false;
 }

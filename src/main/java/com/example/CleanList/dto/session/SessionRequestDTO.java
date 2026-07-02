@@ -5,8 +5,7 @@ import lombok.Builder;
 
 public record SessionRequestDTO(
 
-        Long userId,
-        String ipAddress
+        Long userId
 
 ) {
 }

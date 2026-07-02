@@ -2,22 +2,25 @@ package com.example.CleanList.mappers;
 
 import com.example.CleanList.dto.session.SessionResponseDTO;
 import com.example.CleanList.entities.Session;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-
+@Component
 public class SessionMapper {
 
-    public static SessionResponseDTO toResponse(Session session){
+    public SessionResponseDTO toResponse(Session session) {
+
         return SessionResponseDTO.builder()
                 .id(session.getId())
-                .user(session.getUser())
+                .userId(session.getUser().getId())
                 .token(session.getToken())
                 .ipAddress(session.getIpAddress())
                 .expiresAt(session.getExpiresAt())
                 .lastUsed(session.getLastUsed())
-                .deletedAt(session.getDeletedAt())
-                .updatedAt(session.getUpdatedAt())
                 .createdAt(session.getCreatedAt())
+                .updatedAt(session.getUpdatedAt())
+                .deletedAt(session.getDeletedAt())
                 .build();
     }
 }
