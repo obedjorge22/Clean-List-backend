@@ -3,6 +3,8 @@ package com.example.CleanList.mappers;
 import com.example.CleanList.dto.session.SessionResponseDTO;
 import com.example.CleanList.entities.Session;
 
+import java.util.Optional;
+
 public class SessionMapper {
 
     public static SessionResponseDTO toResponse(Session session){
