@@ -1,13 +1,14 @@
 package com.example.CleanList.dto.session;
 
+import com.example.CleanList.entities.Users;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-
+@Builder
 public record SessionResponseDTO(
         Long id,
-        Long userid,
+        Users user,
         String ipAddress,
         String token,
         LocalDateTime expiresAt,
